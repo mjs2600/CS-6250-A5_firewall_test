@@ -51,6 +51,40 @@ def block_east_west_port_1080(mn):
     else:
         print "PASSED: 'Block all traffic in both directions between the East and West on port 1080'"
 
+def allow_east_west_port_1081(mn):
+    print "***********************************************************************************"
+    print "TEST: 'Allow all traffic in both directions between the East and West on port 1081 except E1 to W1'"
+    print "***********************************************************************************"
+    failed = False
+
+    port = 1081
+
+    east = ['e1', 'e2', 'e3']
+    west = ['w1', 'w2', 'w3']
+
+    # Test East to West
+    for e in east:
+        for w in west:
+            if testconnection(mn, w, e, port):
+                print 'PASS: Connection established from client ({}) to server ({}) on port ({})'.format(e, w, port)
+            elif e != 'e1' or w != 'w1':
+                failed = True
+                print 'FAIL: Connection refused from client ({}) to server ({}) on port ({})'.format(e, w, port)
+
+    # Test West to East
+    for w in west:
+        for e in east:
+            if testconnection(mn, e, w, port):
+                print 'PASS: Connection established from client ({}) to server ({}) on port ({})'.format(w, e, port)
+            elif e != 'e1' or w != 'w1':
+                failed = True
+                print 'FAIL: Connection refused from client ({}) to server ({}) on port ({})'.format(w, e, port)
+
+    if failed:
+        raise TestFailure("FAILED: 'Allow all traffic in both directions between the East and West on port 1081 except E1 to W1'")
+    else:
+        print "PASSED: 'Allow all traffic in both directions between the East and West on port 1081 except E1 to W1'"
+
 def block_e1_to_w1_completely(mn):
     print "***********************************************************************************"
     print "TEST: 'Block e1 from communicating with w1 completely in both directions'"
@@ -240,6 +274,7 @@ def check_setup():
 def run_tests(mn):
     #list of tests to run, edit as needed
     tests = ['block_east_west_port_1080',
+             'allow_east_west_port_1081',
              'block_e1_to_w1_completely',
              'allow_traffic_within_east_west',
              'block_e2_to_w2_over_2000',
